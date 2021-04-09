@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(emailEditText.text.toString(), passwordEditText.text.toString()).addOnCompleteListener{
                     if(it.isSuccessful){
-                        abrirHome()
+                        abrirMapa()
                     } else {
                         alertar()
                     }
@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 FirebaseAuth.getInstance().signInWithEmailAndPassword(emailEditText.text.toString(),
                         passwordEditText.text.toString()).addOnCompleteListener{
                     if(it.isSuccessful){
-                        abrirHome()
+                        abrirMapa()
                     } else {
                         alertar()
                     }
@@ -55,9 +55,9 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    private fun abrirHome(){
-        val homeIntent = Intent(this, HomeActivity::class.java)
-        startActivity(homeIntent)
+    private fun abrirMapa(){
+        val mapaIntent = Intent(this, MapsActivity::class.java)
+        startActivity(mapaIntent)
     }
 
 }
