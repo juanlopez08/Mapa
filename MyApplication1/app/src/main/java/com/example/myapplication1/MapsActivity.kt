@@ -1,8 +1,12 @@
 package com.example.myapplication1
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.text.InputType
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -17,7 +21,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_maps.*
-import java.security.AccessController.getContext
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -25,6 +28,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     //ubicacion actual del cliente
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
+    private val marcadorTitulo = ""
 
     companion object{
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -83,19 +87,45 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         floatingButton.setOnClickListener(){
 
-            mMap.setOnMapClickListener(OnMapClickListener { point ->
-                //Toast.makeText(this, point.latitude.toString() + ", " + point.longitude, Toast.LENGTH_SHORT).show()
-                val locationClicked = LatLng(point.latitude, point.longitude)
-                Toast.makeText(this, locationClicked.toString(), Toast.LENGTH_SHORT).show()
+            //Dialogo para el titulo
+            val builder: AlertDialog.Builder = android.app.AlertDialog.Builder(this)
+            builder.setTitle("Ingrese el nombre de la ubicación")
+            // input
+            val input = EditText(this)
+            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            //input.setHint("Ingrese el nombre de la ubicación")
+            input.inputType = InputType.TYPE_CLASS_TEXT
+            builder.setView(input)
 
-                mMap.addMarker(MarkerOptions().position(locationClicked))
-                //mMap.addMarker(MarkerOptions().position(LatLng(Location)).title("Probando"))
-                mMap.setOnMapClickListener(null)
+            // botones
+            builder.setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                // Here you get get input text from the Edittext
+                var markedName = input.text.toString()
+                //Marcador
+                mMap.setOnMapClickListener(OnMapClickListener { point ->
+                    //Toast.makeText(this, point.latitude.toString() + ", " + point.longitude, Toast.LENGTH_SHORT).show()
+                    val locationClicked = LatLng(point.latitude, point.longitude)
+                    //Toast.makeText(this, locationClicked.toString(), Toast.LENGTH_SHORT).show()
+
+                    //Crear marcador
+                    mMap.addMarker(MarkerOptions().position(locationClicked).title(markedName))
+//                mMap.addMarker(MarkerOptions().position(LatLng(Location)).title("Probando"))
+
+                    mMap.setOnMapClickListener(null)
+                })
+                
             })
+            builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
+            builder.show()
+
 
         }
 
+
+
     }
+
+
 
 
 }
