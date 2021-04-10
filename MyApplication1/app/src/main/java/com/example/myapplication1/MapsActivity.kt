@@ -59,11 +59,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.setOnMarkerClickListener(this)
         mMap.uiSettings.isZoomControlsEnabled = true
 
-                setUpMap()
+        setUpMap()
         agregarMarcadores()
 
     }
-
 
     //localizacion de usuario
     private fun setUpMap(){
@@ -80,13 +79,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLong, 4f))
             }
         }
-//        val marcadores = arrayOf(LatLng(-184.0, 151.0), LatLng(-34.0, 151.0),  LatLng(-34.0, 152.0))
-//        val titulos = arrayOf("1", "2", "3")
-//        for(posicion in marcadores.indices ){
-//            mMap.addMarker(MarkerOptions().position(marcadores[posicion]).title(titulos[posicion]))
-//        }
-
-       // Toast.makeText(this, "${myDatabase.key}", Toast.LENGTH_LONG).show()
 
         myDatabase.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
@@ -99,32 +91,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 Log.i("TAG2", "Got value ${mapaCoordenadas}")
 
                 if(mapaCoordenadas is Map<*, *>) {
-                    println("mapaCoordenadas is of type Map")
-                   // print("-------------------------------------")
-                   // print(mapaCoordenadas.size)
-                    print("--------------FOR EACH-----------------------")
+                   // println("mapaCoordenadas is of type Map")
 
                     for ((k, v) in mapaCoordenadas) {
-                        print("--------------FOR-----------------------")
-                        println("$k = $v")
+                   //     println("$k = $v")
                         if(v is Map<*,*>){
                             var lat = v["latitude"]
                             var lng = v["longitude"]
                             mMap.addMarker(MarkerOptions().position(LatLng(lat as Double, lng as Double)).title(k as String?))
-//                            mMap.addMarker(MarkerOptions().position(LatLng(10.33,-66.83)).title(k as String?))
                         }
                     }
-
-//                    mapaCoordenadas.forEach {
-//                        k, v ->
-//                        println("$k = $v")
-//                        print("--------------AQUIIIII-----------------------")
-//                        print(v)
-//                        mMap.addMarker(MarkerOptions().position(LatLng(10.33,-66.83)).title(k as String?))
-//                    }
-
-
-
                 }
             }
         })
@@ -159,19 +135,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                     mMap.setOnMapClickListener(null)
 
-
                     //mandar datos a firebase ESCRITURA
                     myDatabase.child(markedName).setValue(locationClicked).addOnCompleteListener{
                         Toast.makeText(this, "Marcador Guardado", Toast.LENGTH_LONG).show()
                     }
-
                 })
-
             })
             builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
             builder.show()
         }
     }
-
-
 }
