@@ -20,6 +20,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_maps.*
 
 
@@ -28,7 +30,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     //ubicacion actual del cliente
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
-    private val marcadorTitulo = ""
+    val myDatabase = FirebaseDatabase.getInstance().getReference("Coordenadas")
+
 
     companion object{
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -52,11 +55,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
         mMap.setOnMarkerClickListener(this)
         mMap.uiSettings.isZoomControlsEnabled = true
 
-        setUpMap()
+                setUpMap()
         agregarMarcadores()
 
     }
@@ -74,25 +76,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             if(location != null){
                 lastLocation=location
                 val currentLatLong = LatLng(location.latitude, location.longitude)
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLong, 13f))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLong, 4f))
             }
         }
     }
 
     private fun agregarMarcadores(){
-        // Add a marker in Sydney and move the camera
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-
+        
         floatingButton.setOnClickListener(){
-
             //Dialogo para el titulo
             val builder: AlertDialog.Builder = android.app.AlertDialog.Builder(this)
             builder.setTitle("Ingrese el nombre de la ubicación")
             // input
             val input = EditText(this)
-            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+            // Specify the type of input expected
             //input.setHint("Ingrese el nombre de la ubicación")
             input.inputType = InputType.TYPE_CLASS_TEXT
             builder.setView(input)
@@ -109,20 +106,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
                     //Crear marcador
                     mMap.addMarker(MarkerOptions().position(locationClicked).title(markedName))
-//                mMap.addMarker(MarkerOptions().position(LatLng(Location)).title("Probando"))
 
                     mMap.setOnMapClickListener(null)
+
+                    //mandar datos a firebase ESCRITURA
+                    myDatabase.child(markedName).setValue(locationClicked).addOnCompleteListener{
+                        Toast.makeText(this, "Marcador Guardado", Toast.LENGTH_LONG).show()
+                    }
+
                 })
-                
+
             })
             builder.setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which -> dialog.cancel() })
             builder.show()
-
-
         }
-
-
-
     }
 
 
